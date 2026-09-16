@@ -1,0 +1,122 @@
+class Solution {
+public:
+    int largestRectangleArea(vector<int>& heights) {
+        int n = heights.size();
+        vector<int> left(n), right(n);
+        stack<int> st;
+
+        // Nearest Smaller to Left
+        for (int i = 0; i < n; i++) {
+            while (!st.empty() && heights[st.top()] >= heights[i]) st.pop();
+            left[i] = st.empty() ? -1 : st.top();
+            st.push(i);
+        }
+
+        while (!st.empty()) st.pop();
+
+        // Nearest Smaller to Right
+        for (int i = n - 1; i >= 0; i--) {
+            while (!st.empty() && heights[st.top()] >= heights[i]) st.pop();
+            right[i] = st.empty() ? n : st.top();
+            st.push(i);
+        }
+
+        int maxArea = 0;
+        for (int i = 0; i < n; i++) {
+            int width = right[i] - left[i] - 1;
+            maxArea = max(maxArea, heights[i] * width);
+        }
+        return maxArea;
+    }
+};
+Approach — Largest Rectangle in Histogram
+
+The main idea is to calculate, for every bar, how far it can extend to the left and right while maintaining at least its height.
+
+For each heights[i]:
+
+Find the Nearest Smaller Element to Left (NSL) → stored in left[i]
+Find the Nearest Smaller Element to Right (NSR) → stored in right[i]
+Then calculate the maximum rectangle using heights[i] as the minimum height.
+1. Nearest Smaller to Left
+while (!st.empty() && heights[st.top()] >= heights[i])
+    st.pop();
+
+left[i] = st.empty() ? -1 : st.top();
+st.push(i);
+
+The stack stores indices of bars in increasing height order.
+
+left[i] tells us the first smaller bar on the left.
+
+2. Nearest Smaller to Right
+
+Same concept, but traverse from right to left:
+
+while (!st.empty() && heights[st.top()] >= heights[i])
+    st.pop();
+
+right[i] = st.empty() ? n : st.top();
+st.push(i);
+
+right[i] tells us the first smaller bar on the right.
+
+3. Calculate Width
+
+For bar i:
+
+width = right[i] - left[i] - 1;
+
+Why -1?
+
+Because left[i] and right[i] themselves are smaller bars and cannot be included.
+
+So:
+
+Width = Right Smaller Index - Left Smaller Index - 1
+4. Calculate Area
+area = heights[i] * width;
+
+Then keep the maximum:
+
+maxArea = max(maxArea, heights[i] * width);
+Example
+
+For:
+
+heights = [2, 1, 5, 6, 2, 3]
+
+For the bar 5:
+
+Left smaller  = index 1
+Right smaller = index 4
+
+Therefore:
+
+width = 4 - 1 - 1 = 2
+area  = 5 × 2 = 10
+
+So the maximum rectangle is 10.
+
+Time Complexity
+O(n)
+
+There are 3 main passes:
+
+Find smaller element on left → O(n)
+Find smaller element on right → O(n)
+Calculate areas → O(n)
+
+Although there are while loops inside the for loops, each index is pushed and popped from the stack at most once per pass.
+
+Therefore:
+
+O(n) + O(n) + O(n) = O(n)
+Space Complexity
+O(n)
+
+Because we use:
+
+left → O(n)
+right → O(n)
+stack → O(n)
