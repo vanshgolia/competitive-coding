@@ -1,0 +1,129 @@
+class Solution {
+public:
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        ListNode* dummy = new ListNode(0);
+        dummy->next = head;
+        
+        ListNode* fast = dummy;
+        ListNode* slow = dummy;
+        for (int i = 0; i <= n; i++) {
+            fast = fast->next;
+        }
+        while (fast != nullptr) {
+            fast = fast->next;
+            slow = slow->next;
+        }
+        ListNode* temp = slow->next;
+        slow->next = slow->next->next;
+        delete temp;
+        
+        return dummy->next;
+    }
+};
+Approach — Remove Nth Node From End of List
+
+The main idea is to use the Two Pointer / Fast and Slow Pointer technique.
+
+We use a dummy node before head to make removing the first node easier.
+
+1. Create a Dummy Node
+ListNode* dummy = new ListNode(0);
+dummy->next = head;
+
+The list becomes:
+
+dummy → 1 → 2 → 3 → 4 → 5
+
+This helps when the node to remove is the head.
+
+2. Initialize Two Pointers
+ListNode* fast = dummy;
+ListNode* slow = dummy;
+
+Both start at the dummy node.
+
+3. Move fast Ahead by n + 1
+for (int i = 0; i <= n; i++) {
+    fast = fast->next;
+}
+
+We move fast n+1 positions ahead of slow.
+
+Why n+1?
+
+Because slow needs to stop at the node just before the node we want to delete.
+
+Example:
+
+1 → 2 → 3 → 4 → 5
+            ↑
+          remove 4
+
+If n = 2, the 2nd node from the end is 4.
+
+After creating the gap:
+
+slow                  fast
+ ↓                      ↓
+dummy → 1 → 2 → 3 → 4 → 5
+4. Move Both Pointers
+while (fast != nullptr) {
+    fast = fast->next;
+    slow = slow->next;
+}
+
+Both move at the same speed until fast reaches the end.
+
+Now slow is immediately before the node to remove.
+
+5. Remove the Node
+ListNode* temp = slow->next;
+slow->next = slow->next->next;
+delete temp;
+
+Suppose:
+
+1 → 2 → 3 → 4 → 5
+        ↑   ↑
+      slow remove
+
+After:
+
+slow->next = slow->next->next;
+
+we get:
+
+1 → 2 → 3 → 5
+6. Return the Head
+return dummy->next;
+
+We return the actual head, not the dummy node.
+
+Time Complexity
+O(n)
+
+There are two traversals:
+
+Moving fast → O(n)
+Moving fast and slow → O(n)
+
+Therefore:
+
+O(n) + O(n) = O(n)
+
+Since constants are ignored:
+
+Time Complexity = O(n)
+
+Space Complexity
+
+Only a few pointers are used:
+
+dummy
+fast
+slow
+temp
+
+So:
+
+Space Complexity = O(1)
